@@ -1,0 +1,630 @@
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Star, Instagram, Github, Mail, Menu, X, Plus, Upload, ArrowRight, Award, BookOpen, Code, Palette } from 'lucide-react';
+
+// --- Types ---
+interface Project {
+  id: number;
+  title: string;
+  description: string;
+  image_url: string;
+  category: string;
+}
+
+// --- Components ---
+
+const StarryBackground = () => {
+  const [stars, setStars] = useState<{ id: number; top: string; left: string; size: string; duration: string }[]>([]);
+  const [fallingStars, setFallingStars] = useState<{ id: number; top: string; left: string; duration: string; delay: string }[]>([]);
+  const [decorButtons, setDecorButtons] = useState<{ id: number; top: string; left: string; size: string; rotate: string; color: string }[]>([]);
+  const [decorStars, setDecorStars] = useState<{ id: number; top: string; left: string; size: number; rotate: string; opacity: number }[]>([]);
+
+  useEffect(() => {
+    const newStars = Array.from({ length: 120 }).map((_, i) => ({
+      id: i,
+      top: `${Math.random() * 100}%`,
+      left: `${Math.random() * 100}%`,
+      size: `${Math.random() * 4 + 1}px`,
+      duration: `${Math.random() * 4 + 2}s`,
+    }));
+    setStars(newStars);
+
+    const newFallingStars = Array.from({ length: 8 }).map((_, i) => ({
+      id: i,
+      top: `${Math.random() * 50}%`,
+      left: `${Math.random() * 100 + 50}%`,
+      duration: `${Math.random() * 3 + 2}s`,
+      delay: `${Math.random() * 10}s`,
+    }));
+    setFallingStars(newFallingStars);
+
+    const newButtons = Array.from({ length: 15 }).map((_, i) => ({
+      id: i,
+      top: `${Math.random() * 100}%`,
+      left: `${Math.random() * 100}%`,
+      size: `${Math.random() * 20 + 20}px`,
+      rotate: `${Math.random() * 360}deg`,
+      color: ['white', 'black', 'yellow', 'blue', 'red'][Math.floor(Math.random() * 5)]
+    }));
+    setDecorButtons(newButtons);
+
+    const newDecorStars = Array.from({ length: 25 }).map((_, i) => ({
+      id: i,
+      top: `${Math.random() * 100}%`,
+      left: `${Math.random() * 100}%`,
+      size: Math.random() * 20 + 10,
+      rotate: `${Math.random() * 360}deg`,
+      opacity: Math.random() * 0.15 + 0.05,
+    }));
+    setDecorStars(newDecorStars);
+  }, []);
+
+  return (
+    <div className="starry-bg">
+      {stars.map((star) => (
+        <div
+          key={star.id}
+          className="star"
+          style={{
+            top: star.top,
+            left: star.left,
+            width: star.size,
+            height: star.size,
+            '--duration': star.duration,
+          } as any}
+        />
+      ))}
+      {fallingStars.map((star) => (
+        <div
+          key={star.id}
+          className="falling-star"
+          style={{
+            top: star.top,
+            left: star.left,
+            '--duration': star.duration,
+            animationDelay: star.delay,
+          } as any}
+        />
+      ))}
+      {decorButtons.map((btn) => (
+        <div
+          key={btn.id}
+          className="absolute opacity-10 pointer-events-none"
+          style={{
+            top: btn.top,
+            left: btn.left,
+            transform: `rotate(${btn.rotate})`,
+          }}
+        >
+          <ClothesButton 
+            className="w-10 h-10" 
+            variant={btn.color as any}
+            style={{ width: btn.size, height: btn.size } as any} 
+          />
+        </div>
+      ))}
+      {decorStars.map((star) => (
+        <div
+          key={star.id}
+          className="absolute pointer-events-none text-star"
+          style={{
+            top: star.top,
+            left: star.left,
+            transform: `rotate(${star.rotate})`,
+            opacity: star.opacity,
+            filter: 'drop-shadow(0 0 5px rgba(247, 208, 96, 0.5))',
+          }}
+        >
+          <Star size={star.size} fill="currentColor" />
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const ClothesButton = ({ 
+  className = "", 
+  style = {}, 
+  variant = "white" 
+}: { 
+  className?: string; 
+  style?: React.CSSProperties;
+  variant?: 'white' | 'black' | 'yellow' | 'blue' | 'red';
+}) => (
+  <div className={`clothes-button button-${variant} ${className}`} style={style}>
+    <div className="grid grid-cols-2 gap-1.5 relative z-10">
+      <div className="button-hole" />
+      <div className="button-hole" />
+      <div className="button-hole" />
+      <div className="button-hole" />
+    </div>
+  </div>
+);
+
+const Header = ({ activePage, setActivePage }: { activePage: string; setActivePage: (p: string) => void }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <nav className="fixed top-0 w-full z-50 bg-navy/80 backdrop-blur-md border-b border-star/20">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="text-star font-serif text-4xl font-bold tracking-tighter flex items-center gap-3"
+        >
+          Hello!
+        </motion.div>
+
+        {/* Desktop Nav */}
+        <div className="hidden md:flex gap-8">
+          {['Home', 'Portfolio'].map((item) => (
+            <button
+              key={item}
+              onClick={() => setActivePage(item.toLowerCase())}
+              className={`text-sm uppercase tracking-widest transition-colors ${
+                activePage === item.toLowerCase() ? 'text-star font-bold' : 'text-white/60 hover:text-white'
+              }`}
+            >
+              {item}
+            </button>
+          ))}
+          <a href="#contact" className="text-sm uppercase tracking-widest text-white/60 hover:text-white">Contact</a>
+        </div>
+
+        {/* Mobile Menu Toggle */}
+        <button className="md:hidden text-star" onClick={() => setIsOpen(!isOpen)}>
+          {isOpen ? <X /> : <Menu />}
+        </button>
+      </div>
+
+      {/* Mobile Nav */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden bg-purple-deep border-b border-star/20 overflow-hidden"
+          >
+            <div className="flex flex-col p-6 gap-4">
+              {['Home', 'Portfolio'].map((item) => (
+                <button
+                  key={item}
+                  onClick={() => {
+                    setActivePage(item.toLowerCase());
+                    setIsOpen(false);
+                  }}
+                  className="text-left text-lg text-white/80"
+                >
+                  {item}
+                </button>
+              ))}
+              <a href="#contact" onClick={() => setIsOpen(false)} className="text-lg text-white/80">Contact</a>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </nav>
+  );
+};
+
+const Footer = () => (
+  <footer id="contact" className="bg-purple-deep/30 border-t border-star/10 py-16 px-6 relative overflow-hidden">
+    <div className="polka-dot absolute inset-0 opacity-10 pointer-events-none" />
+    <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 relative z-10">
+      <div>
+        <h2 className="font-serif text-4xl text-star mb-6">Let's connect</h2>
+        <p className="text-white/60 mb-8 max-w-md">
+          I'm always open to new ideas and collaborations. Feel free to reach out through any of these platforms!
+        </p>
+        <div className="flex gap-4">
+          <a href="https://github.com/mariest0-v" target="_blank" className="p-3 bg-white/5 rounded-full hover:bg-star/20 transition-colors">
+            <Github className="text-star" />
+          </a>
+          <a href="https://instagram.com/mariiiiest" target="_blank" className="p-3 bg-white/5 rounded-full hover:bg-star/20 transition-colors">
+            <Instagram className="text-star" />
+          </a>
+          <a href="mailto:esthimbd838@gmail.com" className="p-3 bg-white/5 rounded-full hover:bg-star/20 transition-colors">
+            <Mail className="text-star" />
+          </a>
+        </div>
+      </div>
+      <div className="space-y-4">
+        <div className="flex items-center gap-4 text-white/80">
+          <Mail className="text-star w-5 h-5" />
+          <span>esthimbd838@gmail.com</span>
+        </div>
+        <div className="flex items-center gap-4 text-white/80">
+          <Instagram className="text-star w-5 h-5" />
+          <span>@mariiiiest (personal)</span>
+        </div>
+        <div className="flex items-center gap-4 text-white/80">
+          <Instagram className="text-star w-5 h-5" />
+          <span>@moryuhuhu (art)</span>
+        </div>
+      </div>
+    </div>
+    <div className="text-center mt-16 text-white/30 text-xs tracking-widest uppercase">
+      © 2026 Maria Ngesthi Buana Dewanti • Stitched with love
+    </div>
+  </footer>
+);
+
+// --- Pages ---
+
+const HomePage = ({ setActivePage }: { setActivePage: (p: string) => void }) => (
+  <div className="pt-24">
+    {/* Hero Section */}
+    <section className="min-h-[80vh] flex flex-col justify-center px-6 max-w-7xl mx-auto relative">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+      >
+        <div className="inline-block px-4 py-1 rounded-full bg-star/10 border border-star/30 text-star text-xs uppercase tracking-widest mb-6">
+          currently studying at SMAK Frateran Surabaya
+        </div>
+        <h1 className="font-serif text-6xl md:text-8xl mb-6 leading-tight">
+          Maria Ngesthi <br />
+          <span className="text-star italic flex items-center gap-4">
+            Buana Dewanti
+          </span>
+        </h1>
+        <p className="text-xl md:text-2xl text-white/70 max-w-2xl mb-10 font-light italic">
+          "Blending ideas, visuals, and strategy."
+        </p>
+        <div className="flex flex-wrap gap-6">
+          <motion.div 
+            whileHover={{ scale: 1.05 }}
+            onClick={() => setActivePage('portfolio')}
+            className="btn-glow inline-flex items-center gap-3"
+          >
+            Explore My World <ClothesButton className="w-6 h-6" />
+          </motion.div>
+          <motion.a 
+            href="#contact"
+            whileHover={{ scale: 1.05 }}
+            className="inline-flex items-center gap-3 px-8 py-4 rounded-full border-2 border-dashed border-star/40 text-star font-bold uppercase tracking-widest hover:bg-star/10 transition-all"
+          >
+            Get In Touch <Star size={16} />
+          </motion.a>
+        </div>
+      </motion.div>
+
+      {/* Decorative Window Element */}
+      <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden lg:block">
+        <div className="w-64 h-96 window-frame relative flex items-center justify-center stitched-border">
+          <div className="window-pane absolute inset-0 grid grid-cols-2 grid-rows-2 gap-1">
+            <div className="border-r border-b border-star/10" />
+            <div className="border-b border-star/10" />
+            <div className="border-r border-star/10" />
+            <div />
+          </div>
+          <div className="relative z-10 flex flex-col items-center gap-4">
+            <ClothesButton className="w-16 h-16" />
+            <Star className="text-star w-8 h-8 animate-pulse" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* About Me */}
+    <section className="py-24 px-6 max-w-7xl mx-auto">
+      <div className="grid md:grid-cols-2 gap-16 items-center">
+        <div className="relative">
+          <div className="w-full aspect-[3/4] window-frame rounded-xl stitched-border">
+            <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-2 p-2">
+              <div className="window-pane rounded-tl-lg overflow-hidden border-2 border-black">
+                <img src="/uploads/uploads/WhatsApp Image 2026-03-31 at 11.23.16 PM (1).jpeg" className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-300" referrerPolicy="no-referrer" />
+              </div>
+              <div className="window-pane rounded-tr-lg overflow-hidden border-2 border-black">
+                <img src="/uploads/uploads/WhatsApp Image 2026-03-31 at 11.23.16 PM (2).jpeg" className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-300" referrerPolicy="no-referrer" />
+              </div>
+              <div className="window-pane rounded-bl-lg overflow-hidden border-2 border-black">
+                <img src="/uploads/uploads/WhatsApp Image 2026-03-31 at 11.23.16 PM.jpeg" className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-300" referrerPolicy="no-referrer" />
+              </div>
+              <div className="window-pane rounded-br-lg overflow-hidden border-2 border-black">
+                <img src="/uploads/uploads/WhatsApp Image 2026-03-31 at 11.23.17 PM.jpeg" className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-300" referrerPolicy="no-referrer" />
+              </div>
+            </div>
+          </div>
+          <div className="absolute -bottom-8 -right-8 flex flex-col gap-2 z-20">
+            <ClothesButton className="w-14 h-14" />
+            <div className="bg-purple-deep p-4 rounded-2xl border-2 border-dashed border-star/20 shadow-xl">
+              <Palette className="text-star w-8 h-8" />
+            </div>
+          </div>
+        </div>
+        <div>
+          <h2 className="font-serif text-6xl mb-8 flex items-center gap-4 text-star">
+            About Me
+          </h2>
+          <p className="text-2xl text-white/80 leading-relaxed mb-6 font-sans">
+            My name is Maria. Since childhood, I’ve loved drawing—even the walls of my room were once full of my sketches. 
+          </p>
+          <p className="text-2xl text-white/80 leading-relaxed font-sans">
+            Art has always been a big part of who I am, supported by strong communication, discipline, and a high level of ambition to keep growing.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    {/* Experience */}
+    <section className="py-24 px-6 bg-purple-deep/20 relative overflow-hidden">
+      <div className="polka-dot absolute inset-0 opacity-10" />
+      <div className="max-w-7xl mx-auto relative z-10">
+        <h2 className="font-serif text-6xl mb-16 text-center text-star">Achievements & Experience</h2>
+        <div className="grid md:grid-cols-2 gap-8">
+          {[
+            { title: "1st Winner - Phygital Challenge", desc: "Communication Department Petra Christian University", icon: <Award /> },
+            { title: "2nd Winner - Monospace Story Template Design", desc: "VCD Universitas Ciputra Surabaya", icon: <Palette /> },
+            { title: "Top 10 - Design Bullet Journal", desc: "Insight Youth Education Festival 2022", icon: <Star /> },
+            { title: "Team & Creative Lead", desc: "Led multiple school projects, including class curator for Fr.Artz 2026.", icon: <Code /> },
+          ].map((exp, i) => (
+            <motion.div
+              key={i}
+              whileHover={{ y: -5, rotate: i % 2 === 0 ? 1 : -1 }}
+              className="p-8 bg-navy/50 border-2 border-dashed border-star/20 rounded-2xl glow-hover flex gap-6"
+            >
+              <div className="text-star mt-1">
+                <ClothesButton className="w-8 h-8 mb-2" />
+                {exp.icon}
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold mb-2 text-white font-serif">{exp.title}</h3>
+                <p className="text-xl text-white/60 font-sans">{exp.desc}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  </div>
+);
+
+const PortfolioPage = () => {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showUpload, setShowUpload] = useState(false);
+  const [newProject, setNewProject] = useState({ title: '', description: '', category: '', image: null as File | null });
+
+  const fetchProjects = async () => {
+    try {
+      const res = await fetch('/api/projects');
+      const data = await res.json();
+      setProjects(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const handleUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newProject.image || !newProject.title || !newProject.description) return;
+
+    const formData = new FormData();
+    formData.append('title', newProject.title);
+    formData.append('description', newProject.description);
+    formData.append('category', newProject.category);
+    formData.append('image', newProject.image);
+
+    try {
+      const res = await fetch('/api/projects', {
+        method: 'POST',
+        body: formData,
+      });
+      if (res.ok) {
+        setShowUpload(false);
+        setNewProject({ title: '', description: '', category: '', image: null });
+        fetchProjects();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  return (
+    <div className="pt-24 px-6 max-w-7xl mx-auto pb-24">
+      {/* Skills Section */}
+      <section className="mb-24">
+        <h2 className="font-serif text-6xl mb-12 flex items-center gap-4 text-star">
+          Skills <ClothesButton className="w-10 h-10" />
+        </h2>
+        <div className="flex flex-wrap gap-4">
+          {[
+            { name: "Canva", type: "Design" },
+            { name: "Ibispaint", type: "Design & Illustration" },
+            { name: "Adobe Photoshop", type: "Design" },
+            { name: "UI Design", type: "Design" },
+            { name: "KompoZer", type: "UI Design" },
+          ].map((skill, i) => (
+            <div key={i} className="px-6 py-3 bg-purple-deep/40 border-2 border-dashed border-star/20 rounded-full flex items-center gap-3 hover:scale-105 transition-transform">
+              <ClothesButton className="w-4 h-4" />
+              <span className="font-bold text-2xl text-white/90 font-sans">{skill.name}</span>
+              <span className="text-sm text-white/40 uppercase tracking-widest font-sans">{skill.type}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Projects Section */}
+      <section>
+        <div className="flex justify-between items-end mb-12">
+          <h2 className="font-serif text-6xl text-star">Selected Works</h2>
+          <button 
+            onClick={() => setShowUpload(true)}
+            className="flex items-center gap-2 text-star border-2 border-dashed border-star/30 px-6 py-3 rounded-xl hover:bg-star/10 transition-colors font-bold text-xl"
+          >
+            <Plus size={24} /> Add Project
+          </button>
+        </div>
+
+        {loading ? (
+          <div className="text-center py-24 text-white/40 font-serif text-3xl">Loading projects...</div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12">
+            {projects.map((project, i) => (
+              <motion.div
+                key={project.id}
+                layout
+                initial={{ opacity: 0, scale: 0.9, rotate: i % 2 === 0 ? -1 : 1 }}
+                animate={{ opacity: 1, scale: 1 }}
+                whileHover={{ rotate: 0, scale: 1.02 }}
+                className="group relative bg-navy/40 border-4 border-black rounded-2xl overflow-hidden stitched-border"
+              >
+                <div className="aspect-[4/3] overflow-hidden border-b-4 border-black">
+                  <img 
+                    src={project.image_url} 
+                    alt={project.title} 
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 grayscale group-hover:grayscale-0"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+                <div className="p-6 bg-purple-deep/20">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-xs uppercase tracking-[0.2em] text-star font-sans">{project.category}</span>
+                    <ClothesButton className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-3xl font-bold mb-2 font-serif">{project.title}</h3>
+                  <p className="text-xl text-white/60 font-sans line-clamp-2">{project.description}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Upload Modal */}
+      <AnimatePresence>
+        {showUpload && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowUpload(false)}
+              className="absolute inset-0 bg-navy/90 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, y: 50, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 50, scale: 0.9 }}
+              className="relative w-full max-w-lg bg-purple-deep border border-star/30 p-8 rounded-3xl shadow-2xl"
+            >
+              <h3 className="font-serif text-3xl text-star mb-6">Add New Project</h3>
+              <form onSubmit={handleUpload} className="space-y-4">
+                <div>
+                  <label className="block text-xs uppercase tracking-widest text-white/40 mb-2">Title</label>
+                  <input 
+                    type="text" 
+                    required
+                    value={newProject.title}
+                    onChange={e => setNewProject({...newProject, title: e.target.value})}
+                    className="w-full bg-navy/50 border border-star/20 p-3 rounded-xl focus:outline-none focus:border-star transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs uppercase tracking-widest text-white/40 mb-2">Category</label>
+                  <input 
+                    type="text" 
+                    value={newProject.category}
+                    onChange={e => setNewProject({...newProject, category: e.target.value})}
+                    placeholder="e.g. UI Design, School"
+                    className="w-full bg-navy/50 border border-star/20 p-3 rounded-xl focus:outline-none focus:border-star transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs uppercase tracking-widest text-white/40 mb-2">Description</label>
+                  <textarea 
+                    required
+                    value={newProject.description}
+                    onChange={e => setNewProject({...newProject, description: e.target.value})}
+                    className="w-full bg-navy/50 border border-star/20 p-3 rounded-xl h-24 focus:outline-none focus:border-star transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs uppercase tracking-widest text-white/40 mb-2">Project Image</label>
+                  <div className="relative h-32 border-2 border-dashed border-star/20 rounded-xl flex flex-col items-center justify-center hover:border-star/50 transition-colors cursor-pointer">
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      required
+                      onChange={e => setNewProject({...newProject, image: e.target.files?.[0] || null})}
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                    />
+                    <Upload className="text-star/50 mb-2" />
+                    <span className="text-xs text-white/40">
+                      {newProject.image ? newProject.image.name : "Click to upload image"}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex gap-4 pt-4">
+                  <button 
+                    type="button"
+                    onClick={() => setShowUpload(false)}
+                    className="flex-1 py-3 border border-white/10 rounded-xl hover:bg-white/5 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit"
+                    className="flex-1 btn-glow"
+                  >
+                    Save Project
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+// --- Main App ---
+
+export default function App() {
+  const [activePage, setActivePage] = useState('home');
+
+  return (
+    <div className="min-h-screen selection:bg-star selection:text-navy">
+      <StarryBackground />
+      <Header activePage={activePage} setActivePage={setActivePage} />
+      
+      <main>
+        <AnimatePresence mode="wait">
+          {activePage === 'home' ? (
+            <motion.div
+              key="home"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <HomePage setActivePage={setActivePage} />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="portfolio"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <PortfolioPage />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
