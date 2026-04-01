@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Star, Key, Instagram, Github, Mail, Menu, X, Plus, Upload, ArrowRight, Award, BookOpen, Code, Palette } from 'lucide-react';
+import { Star, Key, Instagram, Github, Mail, Menu, X, Award, Code, Palette } from 'lucide-react';
+
+const BASE_URL = ((import.meta as any).env?.BASE_URL as string) || '/';
+const resolvePublicPath = (src: string) => src.startsWith('/') ? `${BASE_URL}${src.slice(1)}` : src;
 
 // --- Types ---
 interface Project {
@@ -353,16 +356,16 @@ const HomePage = ({ setActivePage }: { setActivePage: (p: string) => void }) => 
           <div className="w-full aspect-[3/4] window-frame rounded-xl stitched-border">
             <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-2 p-2">
               <div className="window-pane rounded-tl-lg overflow-hidden border-2 border-black">
-                <img src="/uploads/uploads/WhatsApp Image 2026-03-31 at 11.23.16 PM (1).jpeg" className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-300" referrerPolicy="no-referrer" />
+                <img src={resolvePublicPath('/uploads/home-1.jpeg')} className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-300" referrerPolicy="no-referrer" />
               </div>
               <div className="window-pane rounded-tr-lg overflow-hidden border-2 border-black">
-                <img src="/uploads/uploads/WhatsApp Image 2026-03-31 at 11.23.16 PM (2).jpeg" className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-300" referrerPolicy="no-referrer" />
+                <img src={resolvePublicPath('/uploads/home-2.jpeg')} className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-300" referrerPolicy="no-referrer" />
               </div>
               <div className="window-pane rounded-bl-lg overflow-hidden border-2 border-black">
-                <img src="/uploads/uploads/WhatsApp Image 2026-03-31 at 11.23.16 PM.jpeg" className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-300" referrerPolicy="no-referrer" />
+                <img src={resolvePublicPath('/uploads/home-3.jpeg')} className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-300" referrerPolicy="no-referrer" />
               </div>
               <div className="window-pane rounded-br-lg overflow-hidden border-2 border-black">
-                <img src="/uploads/uploads/WhatsApp Image 2026-03-31 at 11.23.17 PM.jpeg" className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-300" referrerPolicy="no-referrer" />
+                <img src={resolvePublicPath('/uploads/home-4.jpeg')} className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-300" referrerPolicy="no-referrer" />
               </div>
             </div>
           </div>
@@ -421,51 +424,11 @@ const HomePage = ({ setActivePage }: { setActivePage: (p: string) => void }) => 
 );
 
 const PortfolioPage = () => {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showUpload, setShowUpload] = useState(false);
-  const [newProject, setNewProject] = useState({ title: '', description: '', category: '', image: null as File | null });
-
-  const fetchProjects = async () => {
-    try {
-      const res = await fetch('/api/projects');
-      const data = await res.json();
-      setProjects(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProjects();
-  }, []);
-
-  const handleUpload = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newProject.image || !newProject.title || !newProject.description) return;
-
-    const formData = new FormData();
-    formData.append('title', newProject.title);
-    formData.append('description', newProject.description);
-    formData.append('category', newProject.category);
-    formData.append('image', newProject.image);
-
-    try {
-      const res = await fetch('/api/projects', {
-        method: 'POST',
-        body: formData,
-      });
-      if (res.ok) {
-        setShowUpload(false);
-        setNewProject({ title: '', description: '', category: '', image: null });
-        fetchProjects();
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  const projects: Project[] = [
+    { id: 1, title: 'School Group Project', description: 'Python based game for school exam', image_url: '/uploads/satee.jpeg', category: 'School' },
+    { id: 2, title: 'Foodtopia Campaign', description: 'Class posters for Fr.Artz Exhibition 2026', image_url: '/uploads/foodtopia.jpeg', category: 'Campaign' },
+    { id: 3, title: 'UI Design for Informatics', description: 'School projects', image_url: '/uploads/ui-design.jpeg', category: 'UI Design' },
+  ];
 
   return (
     <div className="pt-24 px-6 max-w-7xl mx-auto pb-24">
@@ -493,135 +456,40 @@ const PortfolioPage = () => {
 
       {/* Projects Section */}
       <section>
-        <div className="flex justify-between items-end mb-12">
+        <div className="mb-12">
           <h2 className="font-serif text-6xl text-star">Selected Works</h2>
-          <button 
-            onClick={() => setShowUpload(true)}
-            className="flex items-center gap-2 text-star border-2 border-dashed border-star/30 px-6 py-3 rounded-xl hover:bg-star/10 transition-colors font-bold text-xl"
-          >
-            <Plus size={24} /> Add Project
-          </button>
         </div>
 
-        {loading ? (
-          <div className="text-center py-24 text-white/40 font-serif text-3xl">Loading projects...</div>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12">
-            {projects.map((project, i) => (
-              <motion.div
-                key={project.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9, rotate: i % 2 === 0 ? -1 : 1 }}
-                animate={{ opacity: 1, scale: 1 }}
-                whileHover={{ rotate: 0, scale: 1.02 }}
-                className="group relative bg-navy/40 border-4 border-black rounded-2xl overflow-hidden stitched-border"
-              >
-                <div className="aspect-[4/3] overflow-hidden border-b-4 border-black">
-                  <img 
-                    src={project.image_url} 
-                    alt={project.title} 
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 grayscale group-hover:grayscale-0"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
-                <div className="p-6 bg-purple-deep/20">
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="text-xs uppercase tracking-[0.2em] text-star font-sans">{project.category}</span>
-                    <ClothesButton className="w-6 h-6" />
-                  </div>
-                  <h3 className="text-3xl font-bold mb-2 font-serif">{project.title}</h3>
-                  <p className="text-xl text-white/60 font-sans line-clamp-2">{project.description}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* Upload Modal */}
-      <AnimatePresence>
-        {showUpload && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowUpload(false)}
-              className="absolute inset-0 bg-navy/90 backdrop-blur-sm"
-            />
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12">
+          {projects.map((project, i) => (
             <motion.div
-              initial={{ opacity: 0, y: 50, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 50, scale: 0.9 }}
-              className="relative w-full max-w-lg bg-purple-deep border border-star/30 p-8 rounded-3xl shadow-2xl"
+              key={project.id}
+              layout
+              initial={{ opacity: 0, scale: 0.9, rotate: i % 2 === 0 ? -1 : 1 }}
+              animate={{ opacity: 1, scale: 1 }}
+              whileHover={{ rotate: 0, scale: 1.02 }}
+              className="group relative bg-navy/40 border-4 border-black rounded-2xl overflow-hidden stitched-border"
             >
-              <h3 className="font-serif text-3xl text-star mb-6">Add New Project</h3>
-              <form onSubmit={handleUpload} className="space-y-4">
-                <div>
-                  <label className="block text-xs uppercase tracking-widest text-white/40 mb-2">Title</label>
-                  <input 
-                    type="text" 
-                    required
-                    value={newProject.title}
-                    onChange={e => setNewProject({...newProject, title: e.target.value})}
-                    className="w-full bg-navy/50 border border-star/20 p-3 rounded-xl focus:outline-none focus:border-star transition-colors"
-                  />
+              <div className="aspect-[4/3] overflow-hidden border-b-4 border-black">
+                <img
+                  src={resolvePublicPath(project.image_url)}
+                  alt={project.title}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 grayscale group-hover:grayscale-0"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+              <div className="p-6 bg-purple-deep/20">
+                <div className="flex justify-between items-start mb-2">
+                  <span className="text-xs uppercase tracking-[0.2em] text-star font-sans">{project.category}</span>
+                  <ClothesButton className="w-6 h-6" />
                 </div>
-                <div>
-                  <label className="block text-xs uppercase tracking-widest text-white/40 mb-2">Category</label>
-                  <input 
-                    type="text" 
-                    value={newProject.category}
-                    onChange={e => setNewProject({...newProject, category: e.target.value})}
-                    placeholder="e.g. UI Design, School"
-                    className="w-full bg-navy/50 border border-star/20 p-3 rounded-xl focus:outline-none focus:border-star transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs uppercase tracking-widest text-white/40 mb-2">Description</label>
-                  <textarea 
-                    required
-                    value={newProject.description}
-                    onChange={e => setNewProject({...newProject, description: e.target.value})}
-                    className="w-full bg-navy/50 border border-star/20 p-3 rounded-xl h-24 focus:outline-none focus:border-star transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs uppercase tracking-widest text-white/40 mb-2">Project Image</label>
-                  <div className="relative h-32 border-2 border-dashed border-star/20 rounded-xl flex flex-col items-center justify-center hover:border-star/50 transition-colors cursor-pointer">
-                    <input 
-                      type="file" 
-                      accept="image/*"
-                      required
-                      onChange={e => setNewProject({...newProject, image: e.target.files?.[0] || null})}
-                      className="absolute inset-0 opacity-0 cursor-pointer"
-                    />
-                    <Upload className="text-star/50 mb-2" />
-                    <span className="text-xs text-white/40">
-                      {newProject.image ? newProject.image.name : "Click to upload image"}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex gap-4 pt-4">
-                  <button 
-                    type="button"
-                    onClick={() => setShowUpload(false)}
-                    className="flex-1 py-3 border border-white/10 rounded-xl hover:bg-white/5 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button 
-                    type="submit"
-                    className="flex-1 btn-glow"
-                  >
-                    Save Project
-                  </button>
-                </div>
-              </form>
+                <h3 className="text-3xl font-bold mb-2 font-serif">{project.title}</h3>
+                <p className="text-xl text-white/60 font-sans line-clamp-2">{project.description}</p>
+              </div>
             </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+          ))}
+        </div>
+      </section>
     </div>
   );
 };

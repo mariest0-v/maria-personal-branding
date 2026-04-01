@@ -31,7 +31,7 @@ async function startServer() {
     const insert = db.prepare("INSERT INTO projects (title, description, image_url, category) VALUES (?, ?, ?, ?)");
     insert.run("School Group Project", "Python based game for school exam", "/uploads/satee.jpeg", "School");
     insert.run("Foodtopia Campaign", "Class posters for Fr.Artz Exhibition 2026", "/uploads/foodtopia.jpeg", "Campaign");
-    insert.run("UI Design for Informatics", "School projects", "/uploads/ui design.jpeg", "UI Design");
+    insert.run("UI Design for Informatics", "School projects", "/uploads/ui-design.jpeg", "UI Design");
   }
 
   // Cleanup: Remove specifically requested project if it exists from previous seeds
@@ -43,7 +43,8 @@ async function startServer() {
 
   // Update: Specifically requested image change for UI Design project
   // Using a more accurate fashion/dainty themed placeholder
-  db.prepare("UPDATE projects SET image_url = ? WHERE title = ?").run("/uploads/ui design.jpeg", "UI Design for Informatics");
+  db.prepare("UPDATE projects SET image_url = ? WHERE title = ?").run("/uploads/ui-design.jpeg", "UI Design for Informatics");
+  db.prepare("UPDATE projects SET image_url = ? WHERE image_url = ?").run("/uploads/ui-design.jpeg", "/uploads/ui design.jpeg");
 
   // Multer setup for image uploads
   const uploadDir = path.join(process.cwd(), "public/uploads");
