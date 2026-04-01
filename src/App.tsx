@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Star, Instagram, Github, Mail, Menu, X, Plus, Upload, ArrowRight, Award, BookOpen, Code, Palette } from 'lucide-react';
+import { Star, Key, Instagram, Github, Mail, Menu, X, Plus, Upload, ArrowRight, Award, BookOpen, Code, Palette } from 'lucide-react';
 
 // --- Types ---
 interface Project {
@@ -16,8 +16,10 @@ interface Project {
 const StarryBackground = () => {
   const [stars, setStars] = useState<{ id: number; top: string; left: string; size: string; duration: string }[]>([]);
   const [fallingStars, setFallingStars] = useState<{ id: number; top: string; left: string; duration: string; delay: string }[]>([]);
-  const [decorButtons, setDecorButtons] = useState<{ id: number; top: string; left: string; size: string; rotate: string; color: string }[]>([]);
   const [decorStars, setDecorStars] = useState<{ id: number; top: string; left: string; size: number; rotate: string; opacity: number }[]>([]);
+  const [decorKeys, setDecorKeys] = useState<{ id: number; top: string; left: string; size: number; rotate: string; opacity: number }[]>([]);
+  const [decorButtons, setDecorButtons] = useState<{ id: number; top: string; left: string; size: number; rotate: string; opacity: number }[]>([]);
+  const [decorWebs, setDecorWebs] = useState<{ id: number; top: string; left: string; size: number; rotate: string; opacity: number }[]>([]);
 
   useEffect(() => {
     const newStars = Array.from({ length: 120 }).map((_, i) => ({
@@ -38,16 +40,6 @@ const StarryBackground = () => {
     }));
     setFallingStars(newFallingStars);
 
-    const newButtons = Array.from({ length: 15 }).map((_, i) => ({
-      id: i,
-      top: `${Math.random() * 100}%`,
-      left: `${Math.random() * 100}%`,
-      size: `${Math.random() * 20 + 20}px`,
-      rotate: `${Math.random() * 360}deg`,
-      color: ['white', 'black', 'yellow', 'blue', 'red'][Math.floor(Math.random() * 5)]
-    }));
-    setDecorButtons(newButtons);
-
     const newDecorStars = Array.from({ length: 25 }).map((_, i) => ({
       id: i,
       top: `${Math.random() * 100}%`,
@@ -57,6 +49,36 @@ const StarryBackground = () => {
       opacity: Math.random() * 0.15 + 0.05,
     }));
     setDecorStars(newDecorStars);
+
+    const newDecorKeys = Array.from({ length: 5 }).map((_, i) => ({
+      id: i,
+      top: `${Math.random() * 100}%`,
+      left: `${Math.random() * 100}%`,
+      size: Math.random() * 18 + 16,
+      rotate: `${Math.random() * 360}deg`,
+      opacity: Math.random() * 0.15 + 0.05,
+    }));
+    setDecorKeys(newDecorKeys);
+
+    const newDecorButtons = Array.from({ length: 5 }).map((_, i) => ({
+      id: i,
+      top: `${Math.random() * 100}%`,
+      left: `${Math.random() * 100}%`,
+      size: Math.random() * 22 + 18,
+      rotate: `${Math.random() * 360}deg`,
+      opacity: Math.random() * 0.15 + 0.05,
+    }));
+    setDecorButtons(newDecorButtons);
+
+    const newDecorWebs = Array.from({ length: 4 }).map((_, i) => ({
+      id: i,
+      top: `${Math.random() * 100}%`,
+      left: `${Math.random() * 100}%`,
+      size: Math.random() * 28 + 18,
+      rotate: `${Math.random() * 360}deg`,
+      opacity: Math.random() * 0.15 + 0.05,
+    }));
+    setDecorWebs(newDecorWebs);
   }, []);
 
   return (
@@ -86,26 +108,9 @@ const StarryBackground = () => {
           } as any}
         />
       ))}
-      {decorButtons.map((btn) => (
-        <div
-          key={btn.id}
-          className="absolute opacity-10 pointer-events-none"
-          style={{
-            top: btn.top,
-            left: btn.left,
-            transform: `rotate(${btn.rotate})`,
-          }}
-        >
-          <ClothesButton 
-            className="w-10 h-10" 
-            variant={btn.color as any}
-            style={{ width: btn.size, height: btn.size } as any} 
-          />
-        </div>
-      ))}
       {decorStars.map((star) => (
         <div
-          key={star.id}
+          key={`star-${star.id}`}
           className="absolute pointer-events-none text-star"
           style={{
             top: star.top,
@@ -117,6 +122,48 @@ const StarryBackground = () => {
         >
           <Star size={star.size} fill="currentColor" />
         </div>
+      ))}
+      {decorKeys.map((item) => (
+        <div
+          key={`key-${item.id}`}
+          className="absolute pointer-events-none text-star/80"
+          style={{
+            top: item.top,
+            left: item.left,
+            transform: `rotate(${item.rotate})`,
+            opacity: item.opacity,
+          }}
+        >
+          <Key size={item.size} />
+        </div>
+      ))}
+      {decorButtons.map((item) => (
+        <div
+          key={`button-${item.id}`}
+          className="absolute pointer-events-none"
+          style={{
+            top: item.top,
+            left: item.left,
+            transform: `rotate(${item.rotate})`,
+            opacity: item.opacity,
+          }}
+        >
+          <ClothesButton style={{ width: item.size, height: item.size }} variant="white" />
+        </div>
+      ))}
+      {decorWebs.map((item) => (
+        <div
+          key={`web-${item.id}`}
+          className="absolute spider-web pointer-events-none"
+          style={{
+            top: item.top,
+            left: item.left,
+            width: item.size,
+            height: item.size,
+            transform: `rotate(${item.rotate})`,
+            opacity: item.opacity,
+          }}
+        />
       ))}
     </div>
   );
@@ -152,7 +199,7 @@ const Header = ({ activePage, setActivePage }: { activePage: string; setActivePa
           animate={{ opacity: 1, x: 0 }}
           className="text-star font-serif text-4xl font-bold tracking-tighter flex items-center gap-3"
         >
-          Hello!
+          🪡🐈‍⬛𝓱𝓮𝓵𝓵𝓸  ִֶָ𓂃 ࣪˖ ִֶָ⚉་༘࿐
         </motion.div>
 
         {/* Desktop Nav */}
@@ -262,16 +309,17 @@ const HomePage = ({ setActivePage }: { setActivePage: (p: string) => void }) => 
         transition={{ duration: 0.8 }}
       >
         <div className="inline-block px-4 py-1 rounded-full bg-star/10 border border-star/30 text-star text-xs uppercase tracking-widest mb-6">
-          currently studying at SMAK Frateran Surabaya
+          MEET THE CREATIVE SOUL
         </div>
         <h1 className="font-serif text-6xl md:text-8xl mb-6 leading-tight">
           Maria Ngesthi <br />
           <span className="text-star italic flex items-center gap-4">
             Buana Dewanti
+            <span className="text-5xl leading-none">★</span>
           </span>
         </h1>
         <p className="text-xl md:text-2xl text-white/70 max-w-2xl mb-10 font-light italic">
-          "Blending ideas, visuals, and strategy."
+          "Where ideas, visuals, and strategy spark."
         </p>
         <div className="flex flex-wrap gap-6">
           <motion.div 
@@ -290,21 +338,11 @@ const HomePage = ({ setActivePage }: { setActivePage: (p: string) => void }) => 
           </motion.a>
         </div>
       </motion.div>
-
-      {/* Decorative Window Element */}
-      <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden lg:block">
-        <div className="w-64 h-96 window-frame relative flex items-center justify-center stitched-border">
-          <div className="window-pane absolute inset-0 grid grid-cols-2 grid-rows-2 gap-1">
-            <div className="border-r border-b border-star/10" />
-            <div className="border-b border-star/10" />
-            <div className="border-r border-star/10" />
-            <div />
-          </div>
-          <div className="relative z-10 flex flex-col items-center gap-4">
-            <ClothesButton className="w-16 h-16" />
-            <Star className="text-star w-8 h-8 animate-pulse" />
-          </div>
-        </div>
+      <div className="hidden xl:block absolute right-8 top-24 w-[260px] h-[260px] window-frame rounded-[2rem] border-8 border-star/20 opacity-95 pointer-events-none">
+        <div className="window-pane rounded-tl-2xl bg-white/10" />
+        <div className="window-pane rounded-tr-2xl bg-white/10" />
+        <div className="window-pane rounded-bl-2xl bg-white/10" />
+        <div className="window-pane rounded-br-2xl bg-white/10" />
       </div>
     </section>
 
@@ -340,10 +378,10 @@ const HomePage = ({ setActivePage }: { setActivePage: (p: string) => void }) => 
             About Me
           </h2>
           <p className="text-2xl text-white/80 leading-relaxed mb-6 font-sans">
-            My name is Maria. Since childhood, I’ve loved drawing—even the walls of my room were once full of my sketches. 
+            My name is Maria. Since childhood, I’ve loved drawing, even the walls of my room were once filled with my sketches.
           </p>
           <p className="text-2xl text-white/80 leading-relaxed font-sans">
-            Art has always been a big part of who I am, supported by strong communication, discipline, and a high level of ambition to keep growing.
+            Now, as a student at SMA Katolik Frateran Surabaya, I continue to nurture my passion while growing both academically and creatively supported by strong communication, discipline, and a high level of ambition to keep improving and exploring new ideas.
           </p>
         </div>
       </div>

@@ -131,6 +131,23 @@
     animation: glow-pulse var(--duration, 3s) infinite ease-in-out;
   }
 
+  .spider-web {
+    position: absolute;
+    border: 1px solid rgba(247, 208, 96, 0.35);
+    border-radius: 50%;
+    box-shadow: 0 0 18px rgba(247, 208, 96, 0.14);
+    background-image:
+      radial-gradient(circle at center, transparent 42%, rgba(247, 208, 96, 0.16) 43%, transparent 44%),
+      radial-gradient(circle at center, transparent 62%, rgba(247, 208, 96, 0.1) 63%, transparent 64%),
+      linear-gradient(0deg, rgba(247, 208, 96, 0.2) 1px, transparent 1px),
+      linear-gradient(45deg, rgba(247, 208, 96, 0.2) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(247, 208, 96, 0.2) 1px, transparent 1px),
+      linear-gradient(135deg, rgba(247, 208, 96, 0.2) 1px, transparent 1px);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    backdrop-filter: blur(0.5px);
+  }
+
   .window-frame {
     position: relative;
     border: 8px solid #3d2b56;
