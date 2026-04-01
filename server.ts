@@ -8,7 +8,7 @@ import cors from "cors";
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 
   app.use(cors());
   app.use(express.json());
@@ -29,21 +29,21 @@ async function startServer() {
   const count = db.prepare("SELECT COUNT(*) as count FROM projects").get() as { count: number };
   if (count.count === 0) {
     const insert = db.prepare("INSERT INTO projects (title, description, image_url, category) VALUES (?, ?, ?, ?)");
-    insert.run("School Group Project", "Python based game for school exam", "/uploads/uploads/satee.jpeg", "School");
-    insert.run("Foodtopia Campaign", "Class posters for Fr.Artz Exhibition 2026", "/uploads/uploads/foodtopia.jpeg", "Campaign");
-    insert.run("UI Design for Informatics", "School projects", "/uploads/uploads/ui design.jpeg", "UI Design");
+    insert.run("School Group Project", "Python based game for school exam", "/uploads/satee.jpeg", "School");
+    insert.run("Foodtopia Campaign", "Class posters for Fr.Artz Exhibition 2026", "/uploads/foodtopia.jpeg", "Campaign");
+    insert.run("UI Design for Informatics", "School projects", "/uploads/ui design.jpeg", "UI Design");
   }
 
   // Cleanup: Remove specifically requested project if it exists from previous seeds
   db.prepare("DELETE FROM projects WHERE title = ?").run("Foodtopia Campaign Extra");
 
   // Update: Specifically requested image change for School Group Project row if it already exists
-  db.prepare("UPDATE projects SET image_url = ? WHERE title = ?").run("/uploads/uploads/satee.jpeg", "School Group Project");
-  db.prepare("UPDATE projects SET image_url = ? WHERE title = ?").run("/uploads/uploads/foodtopia.jpeg", "Foodtopia Campaign");
+  db.prepare("UPDATE projects SET image_url = ? WHERE title = ?").run("/uploads/satee.jpeg", "School Group Project");
+  db.prepare("UPDATE projects SET image_url = ? WHERE title = ?").run("/uploads/foodtopia.jpeg", "Foodtopia Campaign");
 
   // Update: Specifically requested image change for UI Design project
   // Using a more accurate fashion/dainty themed placeholder
-  db.prepare("UPDATE projects SET image_url = ? WHERE title = ?").run("/uploads/uploads/ui design.jpeg", "UI Design for Informatics");
+  db.prepare("UPDATE projects SET image_url = ? WHERE title = ?").run("/uploads/ui design.jpeg", "UI Design for Informatics");
 
   // Multer setup for image uploads
   const uploadDir = path.join(process.cwd(), "public/uploads");
