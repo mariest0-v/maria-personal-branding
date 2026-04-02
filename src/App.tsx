@@ -354,18 +354,9 @@ const HomePage = ({ setActivePage }: { setActivePage: (p: string) => void }) => 
       <div className="grid md:grid-cols-2 gap-16 items-center">
         <div className="relative">
           <div className="w-full aspect-[3/4] window-frame rounded-xl stitched-border">
-            <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-2 p-2">
-              <div className="window-pane rounded-tl-lg overflow-hidden border-2 border-black">
-                <img src={resolvePublicPath('/uploads/home-1.jpeg')} className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-300" referrerPolicy="no-referrer" />
-              </div>
-              <div className="window-pane rounded-tr-lg overflow-hidden border-2 border-black">
-                <img src={resolvePublicPath('/uploads/home-2.jpeg')} className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-300" referrerPolicy="no-referrer" />
-              </div>
-              <div className="window-pane rounded-bl-lg overflow-hidden border-2 border-black">
+            <div className="absolute inset-0 p-2">
+              <div className="window-pane rounded-lg overflow-hidden border-2 border-black h-full">
                 <img src={resolvePublicPath('/uploads/home-3.jpeg')} className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-300" referrerPolicy="no-referrer" />
-              </div>
-              <div className="window-pane rounded-br-lg overflow-hidden border-2 border-black">
-                <img src={resolvePublicPath('/uploads/home-4.jpeg')} className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-300" referrerPolicy="no-referrer" />
               </div>
             </div>
           </div>
@@ -397,9 +388,10 @@ const HomePage = ({ setActivePage }: { setActivePage: (p: string) => void }) => 
         <h2 className="font-serif text-6xl mb-16 text-center text-star">Achievements & Experience</h2>
         <div className="grid md:grid-cols-2 gap-8">
           {[
-            { title: "1st Winner - Phygital Challenge", desc: "Communication Department Petra Christian University", icon: <Award /> },
-            { title: "2nd Winner - Monospace Story Template Design", desc: "VCD Universitas Ciputra Surabaya", icon: <Palette /> },
-            { title: "Top 10 - Design Bullet Journal", desc: "Insight Youth Education Festival 2022", icon: <Star /> },
+            { title: "1st Winner - Phygital Challenge", desc: "Faculty Of Communication Petra Christian University", icon: <Award /> },
+            { title: "2nd Winner - Monospace Story Template Design", desc: "Faculty Of VCD Universitas Ciputra Surabaya", icon: <Palette /> },
+            { title: "Top 10 - Bullet Journal Design", desc: "Insight Youth Education Festival 2022", icon: <Star /> },
+            { title: "Semifinalist of Maniac XIII", desc: "Faculty of Informatics Engineering, Multimedia and Interactive Art Competition Universitas Surabaya", icon: <Award /> },
             { title: "Team & Creative Lead", desc: "Led multiple school projects, including class curator for Fr.Artz 2026.", icon: <Code /> },
           ].map((exp, i) => (
             <motion.div
